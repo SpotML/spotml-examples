@@ -18,7 +18,7 @@ Tutorial time - 5 minutes
 #### 1. Clone the repo
 ```
 git clone https://github.com/SpotML/spotml-examples.git 
-cd spotml-examples
+cd spotml-examples/mnist
 ```
 
 #### 2. Start the instance

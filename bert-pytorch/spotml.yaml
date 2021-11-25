@@ -1,0 +1,49 @@
+project:
+  name: bert-pytorch
+  syncFilters:
+    - exclude:
+        - .git/*
+        - .idea/*
+        - images/*
+        - '*/__pycache__/*'
+
+containers:
+  - &DEFAULT_CONTAINER
+    projectDir: /workspace/project
+    file: docker/Dockerfile
+    volumeMounts:
+      - name: workspace
+        mountPath: /workspace
+    env:
+      PYTHONPATH: /workspace/project
+    ports:
+      # tensorboard
+      - containerPort: 6006
+        hostPort: 6006
+      # jupyter
+      - containerPort: 8888
+        hostPort: 8888
+
+instances:
+  - name: aws-1
+    provider: aws
+    parameters:
+      region: us-east-1
+      instanceType: g4dn.xlarge
+      spotStrategy: on-demand
+      ports: [6006, 6007, 8888]
+      rootVolumeSize: 125
+      volumes:
+        - name: workspace
+          parameters:
+            size: 10
+
+scripts:
+  train: |
+    python train.py
+
+  tensorboard: |
+    tensorboard --port 6006 --logdir results/
+
+  jupyter: |
+    CUDA_VISIBLE_DEVICES="" jupyter notebook --allow-root --ip 0.0.0.0
